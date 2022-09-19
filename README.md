@@ -108,7 +108,7 @@ column.upper(mode='full')
 # Iterate first 10 values 
 print(column.items(0, 10))
 
-# Upper case of column values using 'full' mode (slow but supports any encoding)
+# Upper case of column values using 'quick' mode (default). Uses built-in encoding in MongoDB database instance. 
 column.upper(mode='title')
 
 # Iterate first 10 values 
