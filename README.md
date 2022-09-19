@@ -15,7 +15,7 @@ Use `python setup.py install` to install.
 
 ## Examples
 
-See more examples in [examples](github.com/ivbeg/mongorefine/examples) directory.
+See more examples in [examples](https://github.com/ivbeg/mongorefine/tree/main/examples) directory.
 
 ### Character case manipulations
 
