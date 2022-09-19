@@ -16,5 +16,9 @@ Make sure to install the following Python libraries using pip: `glom`, `rich`, `
 
 * resproj_columns.py - prints all columns and column properties
 * resproj_categories.py - scans data collection for columns and prints categorical 
-* resproj_distincy.py - extracts distinct values of several columns
-* resproj_transform.py - enriches documents with additional country data extracted from WorldBank country API
+* resproj_concat.py - concatenation of column values
+* resproj_strings.py - string manipulatios with letter case
+* resproj_distinct.py - extracts distinct values of several columns
+* resproj_transformrecords.py - enriches documents with additional country data extracted from WorldBank country API
+* resproj_transformcolumn.py - transforms single column using column tranforms function
+* resproj_typeconv.py - type conversion functions

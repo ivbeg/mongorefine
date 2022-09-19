@@ -52,7 +52,6 @@ class Column:
             values.append(glom.glom(item, self.name))            
         return values
 
-
     def __repr__(self):
         return 'Column %s (%s)' % (self.name, self.refiner.collname)
 
@@ -202,7 +201,6 @@ class Refiner:
         self.default_rowset = RowSet(self, {})
         pass
 
-
     def metadata(self):
         """Return column spec if exists"""
         return self.__metadata
@@ -268,7 +266,11 @@ class Refiner:
 
     def get_column(self, name):
         """Return column as an object"""
-        return Column(self, name, colspec=self.__metadata['colspecs'][name] if self.__metadata and 'colspecs' in self.__metadata else None)
+        if self.__metadata and 'colspecs' in self.__metadata and  name in self.__metadata['colspecs'].keys():
+            colspec = self.__metadata['colspecs'][name]
+        else:
+            colspec = None
+        return Column(self, name, colspec=colspec)
     
     def columns(self):
         """Return list of columns"""
