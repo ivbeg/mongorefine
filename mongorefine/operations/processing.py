@@ -81,7 +81,3 @@ def split_field(record, field, prefix=None, sep=',', limit=None, delete_original
         glom.delete(record, field)            
     return record
 
-
-if __name__ == "__main__":
-    data = {'one': 'two', 'three': {'four': 'five', 'six': {'seven': 'eight'}}}
-    print(flatten_data(data))

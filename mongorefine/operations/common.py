@@ -14,7 +14,7 @@ def do_lower(s):
 def do_title(s):
     return str(s).title() if s else s
 
-def  do_trim(s):
+def do_trim(s):
     return str(s).strip() if s else s
 
 def do_float(s):

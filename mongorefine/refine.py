@@ -17,19 +17,19 @@ class RowSet:
 
     def count(self):
         """Number of documents in Row set"""
-        return self.refiner.coll.count_documents(query)
+        return self.refiner.coll.count_documents(self.query)
 
     def star(self):
         """Annotate rows in Row set"""
-        self.refiner.coll.update_many(query, {'$set' : {'__mark' : MARK_STAR}})
+        self.refiner.coll.update_many(self.query, {'$set' : {'__mark' : MARK_STAR}})
 
     def flag(self):
         """Annotate rows in Row set"""
-        self.refiner.coll.update_many(query, {'$set' : {'__mark' : MARK_FLAG}})
+        self.refiner.coll.update_many(self.query, {'$set' : {'__mark' : MARK_FLAG}})
 
     def remove(self):
         """Remove all rows in Row set"""
-        self.refiner.coll.remove(query)
+        self.refiner.coll.remove(self.query)
 
     def transform(self, function):
         """Transforms each record of rowset"""
@@ -43,12 +43,18 @@ class Column:
         self.refiner = refiner
         self.name = name
         self.__metadata = colspec
+
+    def freq(self):
+        """Return values by frequency"""
+        cursor = self.refiner.coll.aggregate([{"$group" : {"_id": "$%s" % self.name, "count": {"$sum": 1}}},{"$sort" : {"count" : -1}}])
+        return cursor
     
     def items(self, start=0, limit=10, query={}):
         """Return list of column items"""
         values = []
         query[self.name] = { '$exists' : True}
-        for item in self.cursor(query).skip(start).limit(limit):
+        cursor = self.cursor(query, {self.name : 1}, start, limit)
+        for item in cursor:
             values.append(glom.glom(item, self.name))            
         return values
 
@@ -59,10 +65,16 @@ class Column:
         """Return column spec if exists"""
         return self.__metadata
     
-    def cursor(self, query={}):
+    def cursor(self, query={}, projection=None, skip=None, limit=None):
         """Returm cursor with this column only"""
         query[self.name] = {'$exists': True}
-        return self.refiner.coll.find(query, {self.name: 1})
+        if not projection: projection = {self.name: 1}
+        cursor = self.refiner.coll.find(query, projection)  
+        if skip:
+            cursor = cursor.skip(skip)
+        if limit:
+            cursor = cursor(limit)
+        return cursor
 
     def distinct(self, query={}):
         """Returns list of unique column values"""
@@ -260,6 +272,10 @@ class Refiner:
         """Returm cursor with all data"""        
         return self.coll.find(query)
 
+    def items(self, start=0, limit=10, query={}):
+        """Return list of collection items"""
+        return list(self.cursor(query).skip(start).limit(limit))
+
     def get_rowset(self, query={}):
         """Return row set as an object"""
         return RowSet(self, query)
@@ -350,7 +366,7 @@ class Refiner:
             return processing.join_fields(record, columns, destination, sep, delete_joined)
         self.transform_records(query, do_join)
 
-    def split_column(self, column, sep='', limit='', positions=[], delete_original=True):
+    def split_column(self, column, sep='', limit='', positions=[], delete_original=True, query={}):
         """Split column no number of columns"""
         def do_split(record):
             return processing.split_field(record, sep, limit, positions, delete_original)

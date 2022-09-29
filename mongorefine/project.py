@@ -1,4 +1,4 @@
-from .refine import Column, RowSet, Wrangler
+from .refine import Column, RowSet, Refiner
 
 class Project:
     """Data manipulation project"""
@@ -23,10 +23,10 @@ class Filter:
 
 class View:
     """Wrangler project view"""
-    def __init__(self, wrangler, query={}):
-        self.wrangler = wrangler
+    def __init__(self, refiner, query={}):
+        self.refiner = refiner
         self.__filters = []
-        self.rowset = wrangler.get_rowset(query) 
+        self.rowset = refiner.get_rowset(query) 
         pass
 
     def add_filter(self, rule):
